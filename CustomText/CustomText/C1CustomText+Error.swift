@@ -84,47 +84,7 @@ class C1TextErrorViewModel: ObservableObject, C1TextErrorViewModelProvider {
     
     @Published var customTextModel: CustomTextErrorModel = CustomTextErrorModel(id: "")
 
-//    /// Our fruits.
-//    @Published var label: String = "Redeem"
-//
-//    @Published var labelText: String
-//    @Published var inputText: String
-//    @Published var errorText: String
-//
-//    @Published var labelTextBgColor: Color
-//    @Published var labelTextBorderColor: Color
-//    @Published var labelBorderWidth: Float
-//
-//    init(labelText: String = "", inputText: String = "", errorText: String = "", labelTextBgColor: Color = .clear, labelTextBorderColor: Color = .clear, labelBorderWidth: Float = 1.0) {
-//        self.labelText = labelText
-//        self.inputText = inputText
-//        self.errorText = errorText
-//        self.labelTextBgColor = labelTextBgColor
-//        self.labelTextBorderColor = labelTextBorderColor
-//        self.labelBorderWidth = labelBorderWidth
-//    }
-//
 
-//    /// A temporary copy of the fruit the user wishes to edit, which can be
-//    /// changed without triggering updates to any views.
-//    public var editingFruit: String = "Fruit()"
-//
-//    /// Tells us that the editing view has begun editing.
-//    ///
-//    /// We can now set our editing buffer to the item that the user wishes to
-//    /// edit, which then be bound to the editing view. We emit a change so that
-//    /// this one-time update to `editingFruit` is noticed by the editor immediately
-//    ///
-//    /// - Parameter fruit: The fruit that the user has begun to edit.
-//    public func editorStartedToEdit(_ fruit: String) {
-//        editingFruit = fruit
-//        objectWillChange.send()
-//    }
-//
-//    /// Writes the currently edited fruit item to our fruit array, replacing
-//    /// the older version.
-//    ///
-//    /// Here we store the item that is being edited.
 
 }
 
@@ -140,6 +100,16 @@ struct CustomTextErrorModel {
         case text
     }
     var id: String
+    var isSelected: Bool = false {
+        didSet {
+            if isSelected {
+                backgoundColor = .red
+            } else {
+                backgoundColor = .blue
+
+            }
+        }
+    }
     var labelText: String?
     var inputText: String
     var errorText: String?

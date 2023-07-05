@@ -5,8 +5,8 @@ import SwiftUI
 struct RadioGroup<Model>: View where Model: C1TextErrorViewModelProvider  {
     
     var mod: [Model]
-    @State var selectedId: String = ""
-    let callback: (String) -> ()
+    @State var selectedModel: Model?
+    let callback: (Model) -> ()
 
     var body: some View {
         HStack{
@@ -16,7 +16,11 @@ struct RadioGroup<Model>: View where Model: C1TextErrorViewModelProvider  {
                     
                         RadioButton(content: {
                             C1CustomTextError(viewModel: item)
-                        }, callback: radioGroupCallback, id: "")
+                        },
+                                    callback: radioGroupCallback,
+                                    tag: item.customTextModel.id,
+                                    isMarked: selectedModel?.customTextModel.id == item.customTextModel.id,
+                                    model: item)
                     
                 }
                 
@@ -24,8 +28,8 @@ struct RadioGroup<Model>: View where Model: C1TextErrorViewModelProvider  {
         }.background(.gray)
     }
     
-    func radioGroupCallback(id: String) {
-        selectedId = id
+    func radioGroupCallback(id: Model) {
+        selectedModel = id
         callback(id)
     }
 }
@@ -37,19 +41,23 @@ struct RadioGroup_Previews: PreviewProvider {
 }
 
  
-struct Tag {
-    var tag: String
-}
 
-struct RadioButton<Content: View>: View {
+
+struct RadioButton<Content: View, Model: C1TextErrorViewModelProvider>: View  {
     @ViewBuilder var content: Content
-
-    let callback: (String)->()
-    let id: String
+    let callback: (Model)->()
+    let tag: String
+    var isMarked: Bool {
+        didSet {
+         //   model.customTextModel.isSelected = isMarked
+        }
+    }
+    let model: Model
     
   var body: some View {
     Button(action:{
-        self.callback(self.id)
+        self.callback(model)
+        model.customTextModel.isSelected = isMarked
     }) {
         content
     }
