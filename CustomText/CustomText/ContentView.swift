@@ -33,13 +33,24 @@ struct ContentView: View {
         mod.customTextModel.id = "two"
         return mod
     }
+    
+    var model3:  C1TextErrorViewModel {
+        let mod = C1TextErrorViewModel()
+        mod.customTextModel.inputText = ""
+        mod.customTextModel.labelText = "Three"
+        mod.customTextModel.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
+        mod.customTextModel.inputHolderText = "Enter your name"
+        
+        mod.customTextModel.errorImage = "globe"
+        mod.customTextModel.id = "Three"
+        return mod
+    }
     var body: some View {
         HStack{
             VStack {
 
-                RadioGroup(mod: [model1, model2], callback: { st in
+                RadioGroup(mod: [model1, model2, model3], callback: { st in
                     print(st.customTextModel.id)
-                    st.customTextModel.backgoundColor = .red
                 })
                 
             }

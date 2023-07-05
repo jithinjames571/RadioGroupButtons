@@ -9,7 +9,7 @@ import SwiftUI
 
 struct C1CustomTextError<Model>: View where Model: C1TextErrorViewModelProvider {
     @ObservedObject var viewModel: Model
-
+    @Binding var isSelected: Bool
     var body: some View {
         HStack{
             VStack(alignment: .leading, spacing: 0) {
@@ -47,7 +47,7 @@ struct C1CustomTextError<Model>: View where Model: C1TextErrorViewModelProvider 
 
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(viewModel.customTextModel.backgoundColor)
+            .background(isSelected ? .blue : .red)
             .cornerRadius(4)
             .overlay( /// apply a rounded border
                     RoundedRectangle(cornerRadius: 4)
@@ -70,12 +70,13 @@ struct C1CustomTextErrorPreviews: PreviewProvider {
 
         model.customTextModel.errorImage = "globe"
 
-        return  C1CustomTextError(viewModel: model)
+        return  C1CustomTextError(viewModel: model, isSelected: .constant(true))
         
     }
 }
 
 class C1TextErrorViewModel: ObservableObject, C1TextErrorViewModelProvider {
+    
 
     func saveEditedFruit() {
         customTextModel.labelText =  customTextModel.inputText
@@ -100,16 +101,7 @@ struct CustomTextErrorModel {
         case text
     }
     var id: String
-    var isSelected: Bool = false {
-        didSet {
-            if isSelected {
-                backgoundColor = .red
-            } else {
-                backgoundColor = .blue
-
-            }
-        }
-    }
+    var isSelected: Bool = false
     var labelText: String?
     var inputText: String
     var errorText: String?

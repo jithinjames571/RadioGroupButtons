@@ -13,11 +13,7 @@ struct RadioGroup<Model>: View where Model: C1TextErrorViewModelProvider  {
             VStack {
                 ForEach(1...mod.count, id:\.self) { no in
                     let item = mod[no - 1 ]
-                    
-                        RadioButton(content: {
-                            C1CustomTextError(viewModel: item)
-                        },
-                                    callback: radioGroupCallback,
+                        RadioButton(callback: radioGroupCallback,
                                     tag: item.customTextModel.id,
                                     isMarked: selectedModel?.customTextModel.id == item.customTextModel.id,
                                     model: item)
@@ -43,23 +39,18 @@ struct RadioGroup_Previews: PreviewProvider {
  
 
 
-struct RadioButton<Content: View, Model: C1TextErrorViewModelProvider>: View  {
-    @ViewBuilder var content: Content
+struct RadioButton<Model: C1TextErrorViewModelProvider>: View  {
     let callback: (Model)->()
     let tag: String
-    var isMarked: Bool {
-        didSet {
-         //   model.customTextModel.isSelected = isMarked
-        }
-    }
+    var isMarked: Bool
     let model: Model
     
   var body: some View {
-    Button(action:{
+          Button(action:{
         self.callback(model)
-        model.customTextModel.isSelected = isMarked
     }) {
-        content
+        //model.customTextModel.isSelected = true
+        C1CustomTextError(viewModel: model,isSelected: .constant(isMarked))
     }
     .buttonStyle(.plain)
   }
