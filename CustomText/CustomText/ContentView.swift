@@ -24,6 +24,8 @@ struct ContentView: View {
     }
     var model2:  C1TextErrorViewModel {
         let mod = C1TextErrorViewModel()
+        mod.customTextModel.viewMode = .labelMode
+
         mod.customTextModel.inputText = ""
         mod.customTextModel.labelText = "two"
         mod.customTextModel.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
@@ -51,6 +53,9 @@ struct ContentView: View {
 
                 RadioGroup(mod: [model1, model2, model3], callback: { st in
                     print(st.customTextModel.id)
+//                    if st.customTextModel.inputText.count > 0 {
+//                        st.customTextModel.borderColor = .orange
+//                    }
                 })
                 
             }

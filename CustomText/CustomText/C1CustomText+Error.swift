@@ -6,10 +6,32 @@
 //
 
 import SwiftUI
+enum CellState {
+    case selected
+    case unselected
+    case error
+}
 
+extension CellState {
+    var theme: Color? {
+        switch self {
+        case .selected:
+            return .blue
+        case .unselected:
+            return .gray
+        case .error:
+            return .red
+        }
+    }
+}
 struct C1CustomTextError<Model>: View where Model: C1TextErrorViewModelProvider {
     @ObservedObject var viewModel: Model
-    @Binding var isSelected: Bool
+    @Binding var cellState: CellState
+    @FocusState var isEmailFocused: Bool
+    let callback: (Model)->()?
+
+//    var focused: FocusState<Bool>.Binding     // << here !!
+
     var body: some View {
         HStack{
             VStack(alignment: .leading, spacing: 0) {
@@ -17,8 +39,11 @@ struct C1CustomTextError<Model>: View where Model: C1TextErrorViewModelProvider 
                     .foregroundColor(viewModel.customTextModel.labelTextColor)
                     .padding(EdgeInsets(top: viewModel.customTextModel.labelText?.count ?? 0 > 0 ? 8:0 , leading: 16, bottom: viewModel.customTextModel.labelText?.count ?? 0 > 0 ? 8:0, trailing: 16))
                 
-                if viewModel.customTextModel.viewType == .text {
-                    TextField(viewModel.customTextModel.inputHolderText ?? "", text: $viewModel.customTextModel.inputText)
+                if viewModel.customTextModel.viewMode == .textMode {
+                    TextField(viewModel.customTextModel.inputHolderText ?? "", text: $viewModel.customTextModel.inputText).onSubmit({
+                        print("biongo")
+                        self.callback(viewModel)
+                    }).focused($isEmailFocused)
                         .frame(height: 50, alignment: .leading)
                         .cornerRadius(4)
                         .overlay(
@@ -26,7 +51,6 @@ struct C1CustomTextError<Model>: View where Model: C1TextErrorViewModelProvider 
                                     .stroke(viewModel.customTextModel.inputTextBorderColor, lineWidth: 1)
                             ).padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                         .padding(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
-                    
                     HStack( alignment: .top, spacing: 0) {
                         Image(systemName: viewModel.customTextModel.errorImage ?? "")
                             .imageScale(.large)
@@ -39,6 +63,7 @@ struct C1CustomTextError<Model>: View where Model: C1TextErrorViewModelProvider 
                     
                 } else {
                     Text(viewModel.customTextModel.labelText ?? "").frame(alignment: .leading)
+                        .focused($isEmailFocused)
                         .foregroundColor(.green)
                         .background(.yellow)
                         .padding(EdgeInsets(top: viewModel.customTextModel.labelText?.count ?? 0 > 0 ? 8:0 , leading: 16, bottom: viewModel.customTextModel.labelText?.count ?? 0 > 0 ? 8:0, trailing: 16))
@@ -47,7 +72,7 @@ struct C1CustomTextError<Model>: View where Model: C1TextErrorViewModelProvider 
 
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(isSelected ? .blue : .red)
+            .background(cellState.theme)
             .cornerRadius(4)
             .overlay( /// apply a rounded border
                     RoundedRectangle(cornerRadius: 4)
@@ -56,6 +81,9 @@ struct C1CustomTextError<Model>: View where Model: C1TextErrorViewModelProvider 
                
 
         }
+        .onChange(of: cellState, perform: {newValue in
+            isEmailFocused = newValue == .selected && viewModel.customTextModel.viewMode == .textMode
+        })
     }
 }
 
@@ -69,8 +97,12 @@ struct C1CustomTextErrorPreviews: PreviewProvider {
         model.customTextModel.inputHolderText = "Enter your name"
 
         model.customTextModel.errorImage = "globe"
+        let c = FocusState()
+        c.wrappedValue = true
 
-        return  C1CustomTextError(viewModel: model, isSelected: .constant(true))
+        return  C1CustomTextError(viewModel: model, cellState: .constant(CellState.selected), callback: { id in
+            
+        })
         
     }
 }
@@ -96,12 +128,11 @@ protocol C1TextErrorViewModelProvider: ObservableObject {
 
 
 struct CustomTextErrorModel {
-    enum ViewType {
-        case label
-        case text
+    enum ViewMode {
+        case labelMode
+        case textMode
     }
     var id: String
-    var isSelected: Bool = false
     var labelText: String?
     var inputText: String
     var errorText: String?
@@ -117,9 +148,10 @@ struct CustomTextErrorModel {
     var borderColor: Color = .black
     var errorTextColor: Color = .red
 
-    var viewType: ViewType = .text
+    var viewMode: ViewMode = .textMode
 
     var borderWidth: Float = 1
+    var isSelected: Bool = false
 
     init(inputText: String = "", id: String) {
         self.inputText = inputText
