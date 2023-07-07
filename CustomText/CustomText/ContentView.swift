@@ -13,38 +13,38 @@ struct ContentView: View {
     @State private var slider: String = ""
     var model1:  C1TextErrorViewModel {
         let mod = C1TextErrorViewModel()
-        mod.customTextModel.inputText = ""
-        mod.customTextModel.labelText = "one"
-        mod.customTextModel.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
-        mod.customTextModel.inputHolderText = "Enter your name"
+        mod.config.inputText = ""
+        mod.config.labelText = "one"
+        mod.config.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
+        mod.config.inputHolderText = "Enter your name"
         
-        mod.customTextModel.errorImage = "globe"
-        mod.customTextModel.id = "One"
+        mod.config.errorImage = "globe"
+        mod.config.id = "One"
         return mod
     }
     var model2:  C1TextErrorViewModel {
         let mod = C1TextErrorViewModel()
-        mod.customTextModel.viewMode = .labelMode
+        mod.config.viewMode = .labelMode
 
-        mod.customTextModel.inputText = ""
-        mod.customTextModel.labelText = "two"
-        mod.customTextModel.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
-        mod.customTextModel.inputHolderText = "Enter your name"
+        mod.config.inputText = ""
+        mod.config.labelText = "two"
+        mod.config.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
+        mod.config.inputHolderText = "Enter your name"
         
-        mod.customTextModel.errorImage = "globe"
-        mod.customTextModel.id = "two"
+        mod.config.errorImage = "globe"
+        mod.config.id = "two"
         return mod
     }
     
     var model3:  C1TextErrorViewModel {
         let mod = C1TextErrorViewModel()
-        mod.customTextModel.inputText = ""
-        mod.customTextModel.labelText = "Three"
-        mod.customTextModel.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
-        mod.customTextModel.inputHolderText = "Enter your name"
+        mod.config.inputText = ""
+        mod.config.labelText = "Three"
+        mod.config.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
+        mod.config.inputHolderText = "Enter your name"
         
-        mod.customTextModel.errorImage = "globe"
-        mod.customTextModel.id = "Three"
+        mod.config.errorImage = "globe"
+        mod.config.id = "Three"
         return mod
     }
     var body: some View {
@@ -52,14 +52,15 @@ struct ContentView: View {
             VStack {
 
                 RadioGroup(mod: [model1, model2, model3], callback: { st in
-                    print(st.customTextModel.id)
-//                    if st.customTextModel.inputText.count > 0 {
-//                        st.customTextModel.borderColor = .orange
+                    print(st.config.id)
+//                    if st.config.inputText.count > 0 {
+//                        st.config.borderColor = .orange
 //                    }
                 })
                 
             }
-        }.background(.gray)
+        }.padding(.horizontal,16)
+        
     }
 }
 

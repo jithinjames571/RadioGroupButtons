@@ -8,32 +8,41 @@ struct RadioGroup<Model>: View where Model: C1TextErrorViewModelProvider  {
     @State var selectedModel: Model?
     let callback: (Model) -> ()
     @FocusState var isEmailFocused: Bool
-
+    
     var body: some View {
-        HStack{
-            VStack {
-                ForEach(1...mod.count, id:\.self) { no in
-                    let item = mod[no - 1 ]
-                        RadioButton(callback: radioGroupCallback,
-                                    tag: item.customTextModel.id,
-                                    isMarked: getCellState(item: item),
-                                    model: item)
-                    
-                }
-                
-            }
-        }.background(.gray)
+        ForEach(1...mod.count, id:\.self) { no in
+            let item = mod[no - 1 ]
+            RadioButton(callback: radioGroupCallback,
+                        tag: item.config.id,
+                        isMarked: getCellState(item: item),
+                        model: item)
+        }
     }
     
-    func getCellState(item: Model) -> CellState {
-        if item.customTextModel.inputText.count > 0 {
-            return .error
-        }
-        return selectedModel?.customTextModel.id == item.customTextModel.id ? .selected : .unselected
-    }
+    func getCellState(item: Model) -> Binding<CellState> {
+        var state: CellState = .unselected
 
+        let binding = Binding(
+            get: { state },
+            set: { state = $0 }
+        )
+        
+        if item.config.inputText.count > 0 {
+            state = .error
+            return binding
+        }
+        
+        state = selectedModel?.config.id == item.config.id ? .selected : .unselected
+        return binding
+    }
+    
     func radioGroupCallback(id: Model) {
-        selectedModel = nil
+                if selectedModel?.config.id != id.config.id {
+                    selectedModel?.config.inputText = ""
+                }
+        
+       selectedModel = nil
+        
         selectedModel = id
         callback(id)
     }
@@ -45,25 +54,20 @@ struct RadioGroup_Previews: PreviewProvider {
     }
 }
 
- 
-
 
 struct RadioButton<Model: C1TextErrorViewModelProvider>: View  {
     let callback: (Model)->()
     let tag: String
-    var isMarked: CellState 
+    @Binding var isMarked: CellState
     let model: Model
-    @FocusState var isEmailFocused: Bool 
-
-  var body: some View {
-          Button(action:{
-              isEmailFocused = true
-        self.callback(model)
-    }) {
-        //model.customTextModel.isSelected = true
-        C1CustomTextError(viewModel: model, cellState: .constant(isMarked), callback: callback )
+    
+    var body: some View {
+        Button(action:{
+            self.callback(model)
+        }) {
+            C1CustomTextError(viewModel: model, cellState: $isMarked, callback: callback )
+        }
+        .buttonStyle(.plain)
     }
-    .buttonStyle(.plain)
-  }
 }
 
