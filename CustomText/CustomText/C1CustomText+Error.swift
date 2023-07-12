@@ -133,37 +133,37 @@ struct C1CustomTextFieldError<Model>: View where Model: C1TextErrorViewModelProv
     }
 }
 
-struct C1CustomTextErrorPreviews: PreviewProvider {
-    
-    static var previews: some View {
-        let model =  C1TextErrorViewModel(isValid: { str  in
-            
-            return true
-        })
-        model.config.inputText = ""
-        model.config.labelText = "sd"
-        model.config.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
-        model.config.inputHolderText = "Enter your name"
-        
-        model.config.errorImage = "globe"
-        let c = FocusState()
-        c.wrappedValue = true
-        
-        return  C1CustomText(viewModel: model, cellState: .constant(CellState.selected), callback: { id in
-            
-        })
-        
-    }
-}
+//struct C1CustomTextErrorPreviews: PreviewProvider {
+//    
+//    static var previews: some View {
+//        let model =  C1TextErrorViewModel(isValid: { str  in
+//            
+//            return true
+//        })
+//        model.config.inputText = ""
+//        model.config.labelText = "sd"
+//        model.config.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
+//        model.config.inputHolderText = "Enter your name"
+//        
+//        model.config.errorImage = "globe"
+//        let c = FocusState()
+//        c.wrappedValue = true
+//        
+//        return  C1CustomText(viewModel: model, cellState: .constant(CellState.selected), callback: { id in
+//            
+//        })
+//        
+//    }
+//}
 
 class C1TextErrorViewModel: ObservableObject, C1TextErrorViewModelProvider {
     @Published var config: CustomTextErrorConfig
-    init(isValid: @escaping (String) -> Bool) {
-        config = CustomTextErrorConfig(id: "", isValid: isValid)
+    init(config: CustomTextErrorConfig) {
+        self.config = config
     }
 }
 
-struct CustomTextErrorConfig {
+class CustomTextErrorConfig: ObservableObject {
     enum ViewMode {
         case labelMode
         case textMode
@@ -190,11 +190,10 @@ struct CustomTextErrorConfig {
     
     var borderWidth: Float = 1
     
-    var isValid: (String)-> Bool
+    var isValid: ((String)-> Bool)?
     
-    init(id: String, isValid: @escaping (String)-> Bool) {
+    init(id: String) {
         self.id = id
-        self.isValid = isValid
     }
     
 }

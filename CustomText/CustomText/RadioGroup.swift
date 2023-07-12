@@ -2,7 +2,7 @@ import SwiftUI
 
 struct RadioGroup<Model>: View where Model: C1TextErrorViewModelProvider  {
     
-    var models: [Model]
+    @State var models: [Model]
     @State private var selectedModel: Model?
     let callback: (Model) -> ()
     
@@ -27,7 +27,7 @@ struct RadioGroup<Model>: View where Model: C1TextErrorViewModelProvider  {
             get: { state },
             set: { state = $0 }
         )
-        if !model.config.isValid(model.config.inputText) {
+        if !(model.config.isValid?(model.config.inputText) ??  true) {
             state = .error
             return binding
         }

@@ -10,65 +10,55 @@ import SwiftUI
 
 
 struct ContentView: View {
-    @State private var slider: String = ""
-    var models: [C1TextErrorViewModel]?
     
-    var model1:  C1TextErrorViewModel {
-        let mod = C1TextErrorViewModel(isValid: { str in
-            validdateText(str: str)
-        })
-        mod.config.inputText = ""
-        mod.config.labelText = "one"
-        mod.config.errorText = "There is an erro in text please check and try again"
-        mod.config.inputHolderText = "Enter your name"
+    init() {
+        one = CustomTextErrorConfig(id: "one")
+        two = CustomTextErrorConfig(id: "two")
+        three = CustomTextErrorConfig(id: "three")
         
-        mod.config.errorImage = "globe"
-        mod.config.id = "One"
-        return mod
-    }
-    var model2:  C1TextErrorViewModel {
-        let mod = C1TextErrorViewModel(isValid: {_ in
-            
-            return true
-        })
-        mod.config.viewMode = .labelMode
+        model1 = C1TextErrorViewModel(config: one)
+        model2 = C1TextErrorViewModel(config: two)
+        model3 = C1TextErrorViewModel(config: three)
+        
+        one.inputText = ""
+        one.labelText = "one"
+        one.errorText = "There is an erro in text please check and try again"
+        one.inputHolderText = "Enter your name"
+        one.errorImage = "globe"
+        one.isValid = validdateText
+        
+        two.inputText = ""
+        two.labelText = "two"
+        two.errorText = "There is an erro in text please check and try again"
+        two.inputHolderText = "Enter your name"
+        two.errorImage = "globe"
+        two.isValid = validdateText
 
-        mod.config.inputText = ""
-        mod.config.labelText = "two"
-        mod.config.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
-        mod.config.inputHolderText = "Enter your name"
         
-        mod.config.errorImage = "globe"
-        mod.config.id = "two"
-        return mod
-    }
-    
-    var model3:  C1TextErrorViewModel {
-        let mod = C1TextErrorViewModel(isValid: {str in
-            
-            if str.count > 0 {
-                return false
-            }
-            return true
-            
-        })
-        mod.config.inputText = ""
-        mod.config.labelText = "Three"
-        mod.config.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
-        mod.config.inputHolderText = "Enter your name"
+        three.inputText = ""
+        three.labelText = "three"
+        three.errorText = "There is an erro in text please check and try again"
+        three.inputHolderText = "Enter your name"
+        three.errorImage = "globe"
+        three.isValid = validdateText
+
         
-        mod.config.errorImage = "globe"
-        mod.config.id = "Three"
-        return mod
     }
+     var model1: C1TextErrorViewModel
+     var model2: C1TextErrorViewModel
+     var model3: C1TextErrorViewModel
+
+    var one:  CustomTextErrorConfig
+    var two:  CustomTextErrorConfig
+    var three:  CustomTextErrorConfig
     
     func validdateText(str: String ) -> Bool {
         if str == "aaa" {
             model1.config.errorText = "first error"
             return false
         }
-        if str == "aaa" {
-            model1.config.errorText = "first error"
+        if str == "bbb" {
+            model1.config.errorText = "sec error"
             return false
         }
         return true
