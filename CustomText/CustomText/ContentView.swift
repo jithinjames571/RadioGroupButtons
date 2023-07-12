@@ -15,11 +15,7 @@ struct ContentView: View {
         one = CustomTextErrorConfig(id: "one")
         two = CustomTextErrorConfig(id: "two")
         three = CustomTextErrorConfig(id: "three")
-        
-        model1 = C1TextErrorViewModel(config: one)
-        model2 = C1TextErrorViewModel(config: two)
-        model3 = C1TextErrorViewModel(config: three)
-        
+                
         one.inputText = ""
         one.labelText = "one"
         one.errorText = "There is an erro in text please check and try again"
@@ -44,9 +40,6 @@ struct ContentView: View {
 
         
     }
-     var model1: C1TextErrorViewModel
-     var model2: C1TextErrorViewModel
-     var model3: C1TextErrorViewModel
 
     var one:  CustomTextErrorConfig
     var two:  CustomTextErrorConfig
@@ -54,11 +47,11 @@ struct ContentView: View {
     
     func validdateText(str: String ) -> Bool {
         if str == "aaa" {
-            model1.config.errorText = "first error"
+            one.errorText = "first error"
             return false
         }
         if str == "bbb" {
-            model1.config.errorText = "sec error"
+            one.errorText = "sec error"
             return false
         }
         return true
@@ -69,8 +62,8 @@ struct ContentView: View {
             VStack(spacing: 20) {
                 HStack{
                     VStack {
-                        RadioGroup(models: [model1, model2, model3], callback: { selected in
-                            print(selected.config.id)
+                        RadioGroup(models: [one, two, three], callback: { selected in
+                            print(selected.id)
                         })
                     }
                 }.padding(.horizontal,16)

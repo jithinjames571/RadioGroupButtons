@@ -12,13 +12,13 @@ struct RadioGroup<Model>: View where Model: C1TextErrorViewModelProvider  {
             ForEach(1...models.count, id:\.self) { no in
                 let model = models[no - 1 ]
                 RadioButton(callback: radioGroupCallback,
-                            isSelected: getCellState(model: model),
                             model: model)
             }
-        }.toolbar(content: {
-            ToolbarItem(placement: .keyboard, content: {
-            Text("Title")
-         })})
+        }
+//        .toolbar(content: {
+//            ToolbarItem(placement: .keyboard, content: {
+//            Text("Title")
+//         })})
     }
     
     private func getCellState(model: Model) -> Binding<CellState> {
@@ -27,18 +27,37 @@ struct RadioGroup<Model>: View where Model: C1TextErrorViewModelProvider  {
             get: { state },
             set: { state = $0 }
         )
-        if !(model.config.isValid?(model.config.inputText) ??  true) {
+        if !(model.isValid?(model.inputText) ??  true) {
             state = .error
+            model.cellState = state
+            
             return binding
         }
-        state = selectedModel?.config.id == model.config.id ? .selected : .unselected
+        state = selectedModel?.id == model.id ? .selected : .unselected
+        model.cellState = state
         return binding
     }
     
     func radioGroupCallback(id: Model) {
-        if selectedModel?.config.id != id.config.id {
-            selectedModel?.config.inputText = ""
+        if selectedModel?.id != id.id {
+            selectedModel?.inputText = ""
         }
+        for item in models {
+            if (item.id == id.id ) {
+                
+                if !(id.isValid?(id.inputText) ??  true) {
+                    item.cellState = .error
+
+                } else {
+                    item.cellState = .selected
+                }
+                
+            }
+            else {
+                item.cellState = .unselected
+            }
+        }
+
         selectedModel = nil
         selectedModel = id
         callback(id)
@@ -47,17 +66,16 @@ struct RadioGroup<Model>: View where Model: C1TextErrorViewModelProvider  {
 
 struct RadioButton<Model: C1TextErrorViewModelProvider>: View  {
     let callback: (Model)->()
-    @Binding var isSelected: CellState
     let model: Model
     
     var body: some View {
         Button(action:{
             self.callback(model)
         }) {
-            if model.config.viewMode == .textMode {
-                C1CustomTextFieldError(viewModel: model, cellState: $isSelected, callback: callback )
+            if model.viewMode == .textMode {
+                C1CustomTextFieldError(viewModel: model, callback: callback )
             } else {
-                C1CustomText(viewModel: model, cellState: $isSelected, callback: callback )
+                C1CustomText(viewModel: model, callback: callback )
                 
             }
         }.padding()

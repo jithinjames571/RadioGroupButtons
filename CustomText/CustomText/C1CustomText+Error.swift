@@ -23,12 +23,9 @@ extension CellState {
         }
     }
 }
-protocol C1TextErrorViewModelProvider: ObservableObject {
-    var config: CustomTextErrorConfig {get set}
-}
+
 struct C1CustomText<Model>: View where Model: C1TextErrorViewModelProvider {
     @ObservedObject var viewModel: Model
-    @Binding var cellState: CellState
     @FocusState private var isFocused: Bool
     let callback: (Model)->()?
     
@@ -38,29 +35,29 @@ struct C1CustomText<Model>: View where Model: C1TextErrorViewModelProvider {
     var body: some View {
         HStack{
             VStack(alignment: .leading, spacing: 0) {
-                Text(viewModel.config.labelText)
+                Text(viewModel.labelText)
                     .frame(alignment: .leading)
-                    .foregroundColor(cellState.theme.labelTextColor)
-                    .padding(EdgeInsets(top: viewModel.config.labelText.count > 0 ? vPadding/2:0 , leading: hPadding, bottom: viewModel.config.labelText.count > 0 ? vPadding/2:0, trailing: hPadding))
+                    .foregroundColor(viewModel.cellState.theme.labelTextColor)
+                    .padding(EdgeInsets(top: viewModel.labelText.count > 0 ? vPadding/2:0 , leading: hPadding, bottom: viewModel.labelText.count > 0 ? vPadding/2:0, trailing: hPadding))
                 
-                    Text(viewModel.config.labelText).frame(alignment: .leading)
-                        .foregroundColor(cellState.theme.labelTextColor)
-                        .padding(EdgeInsets(top: viewModel.config.labelText.count > 0 ? vPadding/2:0 , leading: hPadding, bottom: viewModel.config.labelText.count > 0 ? vPadding/2:0, trailing: hPadding))
+                    Text(viewModel.labelText).frame(alignment: .leading)
+                        .foregroundColor(viewModel.cellState.theme.labelTextColor)
+                        .padding(EdgeInsets(top: viewModel.labelText.count > 0 ? vPadding/2:0 , leading: hPadding, bottom: viewModel.labelText.count > 0 ? vPadding/2:0, trailing: hPadding))
                 
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(cellState.theme.backgoundColor)
+            .background(viewModel.cellState.theme.backgoundColor)
             
             .cornerRadius(4)
             .overlay( /// apply a rounded border
                 RoundedRectangle(cornerRadius: 4)
-                    .stroke(cellState.theme.borderColor, lineWidth: 2)
+                    .stroke(viewModel.cellState.theme.borderColor, lineWidth: 2)
             ).padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
             
         }
         
-        .onChange(of: cellState, perform: {newValue in
-            isFocused = newValue == .selected && viewModel.config.viewMode == .textMode
+        .onChange(of: viewModel.cellState, perform: {newValue in
+            isFocused = newValue == .selected && viewModel.viewMode == .textMode
         })
     }
 }
@@ -69,7 +66,6 @@ struct C1CustomText<Model>: View where Model: C1TextErrorViewModelProvider {
 
 struct C1CustomTextFieldError<Model>: View where Model: C1TextErrorViewModelProvider {
     @ObservedObject var viewModel: Model
-    @Binding var cellState: CellState
     @FocusState private var isFocused: Bool
     let callback: (Model)->()?
     
@@ -80,35 +76,35 @@ struct C1CustomTextFieldError<Model>: View where Model: C1TextErrorViewModelProv
         
         HStack{
             VStack(alignment: .leading, spacing: 0) {
-                Text(viewModel.config.labelText)
+                Text(viewModel.labelText)
                     .frame(alignment: .leading)
-                    .foregroundColor(cellState.theme.labelTextColor)
-                    .padding(EdgeInsets(top: viewModel.config.labelText.count > 0 ? vPadding/2:0 , leading: hPadding, bottom: viewModel.config.labelText.count > 0 ? vPadding/2:0, trailing: hPadding))
+                    .foregroundColor(viewModel.cellState.theme.labelTextColor)
+                    .padding(EdgeInsets(top: viewModel.labelText.count > 0 ? vPadding/2:0 , leading: hPadding, bottom: viewModel.labelText.count > 0 ? vPadding/2:0, trailing: hPadding))
                 
-                    TextField(viewModel.config.inputHolderText, text: $viewModel.config.inputText)
+                    TextField(viewModel.inputHolderText, text: $viewModel.inputText)
                         .onSubmit({
                             print("user clicked on return")
                             self.callback(viewModel)
                         })
                         .focused($isFocused)
-                        .keyboardType(viewModel.config.inputKeyBoardType)
+                        .keyboardType(viewModel.inputKeyBoardType)
                         .frame(height: 50, alignment: .leading)
                         .cornerRadius(4)
                         .overlay(
                             RoundedRectangle(cornerRadius: 4)
-                                .stroke(cellState.theme.inputTextBorderColor, lineWidth: 1)
+                                .stroke(viewModel.cellState.theme.inputTextBorderColor, lineWidth: 1)
                         )
                         .background(.white)
                         .cornerRadius(4)
                         .padding(EdgeInsets(top: 0, leading: hPadding, bottom: hPadding, trailing: hPadding))
-                    if cellState == .error {
+                if viewModel.cellState == .error {
                         HStack( alignment: .top, spacing: 0) {
-                            Image(systemName: viewModel.config.errorImage)
+                            Image(systemName: viewModel.errorImage)
                                 .imageScale(.large)
                                 .foregroundColor(.accentColor)
-                            Text(viewModel.config.errorText)
+                            Text(viewModel.errorText)
                                 .frame( alignment: .leading)
-                                .foregroundColor(cellState.theme.labelTextColor)
+                                .foregroundColor(viewModel.cellState.theme.labelTextColor)
                                 .padding((EdgeInsets(top: 0 , leading: 10, bottom: vPadding , trailing: 0)))
                         }.padding(EdgeInsets(top: 0, leading: hPadding, bottom: 0, trailing: hPadding))
                                         
@@ -116,19 +112,19 @@ struct C1CustomTextFieldError<Model>: View where Model: C1TextErrorViewModelProv
             }
             
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(cellState.theme.backgoundColor)
+            .background(viewModel.cellState.theme.backgoundColor)
             
             .cornerRadius(4)
             .overlay( /// apply a rounded border
                 RoundedRectangle(cornerRadius: 4)
-                    .stroke(cellState.theme.borderColor, lineWidth: 2)
+                    .stroke(viewModel.cellState.theme.borderColor, lineWidth: 2)
             ).padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
             
             
         }
         
-        .onChange(of: cellState, perform: {newValue in
-            isFocused = newValue == .selected && viewModel.config.viewMode == .textMode
+        .onChange(of: viewModel.cellState, perform: {newValue in
+            isFocused = newValue == .selected && viewModel.viewMode == .textMode
         })
     }
 }
@@ -140,12 +136,12 @@ struct C1CustomTextFieldError<Model>: View where Model: C1TextErrorViewModelProv
 //            
 //            return true
 //        })
-//        model.config.inputText = ""
-//        model.config.labelText = "sd"
-//        model.config.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
-//        model.config.inputHolderText = "Enter your name"
+//        model.inputText = ""
+//        model.labelText = "sd"
+//        model.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
+//        model.inputHolderText = "Enter your name"
 //        
-//        model.config.errorImage = "globe"
+//        model.errorImage = "globe"
 //        let c = FocusState()
 //        c.wrappedValue = true
 //        
@@ -156,34 +152,67 @@ struct C1CustomTextFieldError<Model>: View where Model: C1TextErrorViewModelProv
 //    }
 //}
 
-class C1TextErrorViewModel: ObservableObject, C1TextErrorViewModelProvider {
-    @Published var config: CustomTextErrorConfig
-    init(config: CustomTextErrorConfig) {
-        self.config = config
-    }
+//jj
+enum ViewMode {
+    case labelMode
+    case textMode
 }
+protocol C1TextErrorViewModelProvider: ObservableObject {
+    
+    var id: String {get set}
+    var labelText: String {get set}
+    var bottonLabelText: String {get set}
+    var inputText: String {get set}
+    var errorText: String {get set}
+    var inputHolderText: String {get set}
+    
+    var inputKeyBoardType: UIKeyboardType {get set}
+    var errorImage: String {get set}
+    
 
-class CustomTextErrorConfig: ObservableObject {
-    enum ViewMode {
-        case labelMode
-        case textMode
-    }
+    
+    var selected: Theme? {get set}
+    var unselected: Theme? {get set}
+    var error: Theme? {get set}
+    
+    
+    var cellState: CellState {get set}
+
+    var errorTextColor: Color {get set}
+    
+    var viewMode: ViewMode {get set}
+    
+    var borderWidth: Float {get set}
+    
+    var isValid: ((String)-> Bool)? {get set}
+    
+}
+class CustomTextErrorConfig: ObservableObject, C1TextErrorViewModelProvider {
+ 
     
     var id: String
-    var labelText: String = ""
-    var bottonLabelText: String = ""
-    var inputText: String = ""
-    var errorText: String = ""
-    var inputHolderText: String = ""
+    @Published var labelText: String = ""
+    @Published var bottonLabelText: String = ""
+    @Published var inputText: String = ""
+    @Published var errorText: String = ""
+    @Published var inputHolderText: String = ""
     
-    var inputKeyBoardType: UIKeyboardType = .default
-    var errorImage: String = ""
+    @Published var inputKeyBoardType: UIKeyboardType = .default
+    @Published var errorImage: String = ""
     
-    var inputTextColor: Color = .black
-    var inputTextBorderColor: Color = .black
-    var labelTextColor: Color = .black
-    var backgoundColor: Color = .green
-    var borderColor: Color = .black
+    @Published var inputTextColor: Color = .black
+    @Published var inputTextBorderColor: Color = .black
+    @Published var labelTextColor: Color = .black
+    @Published var backgoundColor: Color = .green
+    @Published var borderColor: Color = .black
+   
+    @Published var selected: Theme?
+    @Published var unselected: Theme?
+    @Published var error: Theme?
+    @Published var cellState: CellState = .unselected
+
+    
+    
     var errorTextColor: Color = .red
     
     var viewMode: ViewMode = .textMode
