@@ -1,73 +1,69 @@
 import SwiftUI
 
-
-
 struct RadioGroup<Model>: View where Model: C1TextErrorViewModelProvider  {
     
-    var mod: [Model]
-    @State var selectedModel: Model?
+    var models: [Model]
+    @State private var selectedModel: Model?
     let callback: (Model) -> ()
-    @FocusState var isEmailFocused: Bool
     
     var body: some View {
-        ForEach(1...mod.count, id:\.self) { no in
-            let item = mod[no - 1 ]
-            RadioButton(callback: radioGroupCallback,
-                        tag: item.config.id,
-                        isMarked: getCellState(item: item),
-                        model: item)
-        }
+        VStack(spacing: 0) {
+            
+            ForEach(1...models.count, id:\.self) { no in
+                let model = models[no - 1 ]
+                RadioButton(callback: radioGroupCallback,
+                            isSelected: getCellState(model: model),
+                            model: model)
+            }
+        }.toolbar(content: {
+            ToolbarItem(placement: .keyboard, content: {
+            Text("Title")
+         })})
     }
     
-    func getCellState(item: Model) -> Binding<CellState> {
+    private func getCellState(model: Model) -> Binding<CellState> {
         var state: CellState = .unselected
-
         let binding = Binding(
             get: { state },
             set: { state = $0 }
         )
-        
-        if item.config.inputText.count > 0 {
+        if !model.config.isValid(model.config.inputText) {
             state = .error
             return binding
         }
-        
-        state = selectedModel?.config.id == item.config.id ? .selected : .unselected
+        state = selectedModel?.config.id == model.config.id ? .selected : .unselected
         return binding
     }
     
     func radioGroupCallback(id: Model) {
-                if selectedModel?.config.id != id.config.id {
-                    selectedModel?.config.inputText = ""
-                }
-        
-       selectedModel = nil
-        
+        if selectedModel?.config.id != id.config.id {
+            selectedModel?.config.inputText = ""
+        }
+        selectedModel = nil
         selectedModel = id
         callback(id)
     }
 }
 
-struct RadioGroup_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
-
-
 struct RadioButton<Model: C1TextErrorViewModelProvider>: View  {
     let callback: (Model)->()
-    let tag: String
-    @Binding var isMarked: CellState
+    @Binding var isSelected: CellState
     let model: Model
     
     var body: some View {
         Button(action:{
             self.callback(model)
         }) {
-            C1CustomTextError(viewModel: model, cellState: $isMarked, callback: callback )
-        }
-        .buttonStyle(.plain)
+            if model.config.viewMode == .textMode {
+                C1CustomTextFieldError(viewModel: model, cellState: $isSelected, callback: callback )
+            } else {
+                C1CustomText(viewModel: model, cellState: $isSelected, callback: callback )
+                
+            }
+        }.padding()
+            .buttonStyle(.plain)
+        
     }
+    
 }
 

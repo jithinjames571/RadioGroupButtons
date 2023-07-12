@@ -23,7 +23,10 @@ extension CellState {
         }
     }
 }
-struct C1CustomTextError<Model>: View where Model: C1TextErrorViewModelProvider {
+protocol C1TextErrorViewModelProvider: ObservableObject {
+    var config: CustomTextErrorConfig {get set}
+}
+struct C1CustomText<Model>: View where Model: C1TextErrorViewModelProvider {
     @ObservedObject var viewModel: Model
     @Binding var cellState: CellState
     @FocusState private var isFocused: Bool
@@ -31,7 +34,7 @@ struct C1CustomTextError<Model>: View where Model: C1TextErrorViewModelProvider 
     
     let hPadding = 16.0
     let vPadding = 16.0
-
+    
     var body: some View {
         HStack{
             VStack(alignment: .leading, spacing: 0) {
@@ -40,12 +43,53 @@ struct C1CustomTextError<Model>: View where Model: C1TextErrorViewModelProvider 
                     .foregroundColor(cellState.theme.labelTextColor)
                     .padding(EdgeInsets(top: viewModel.config.labelText.count > 0 ? vPadding/2:0 , leading: hPadding, bottom: viewModel.config.labelText.count > 0 ? vPadding/2:0, trailing: hPadding))
                 
-                if viewModel.config.viewMode == .textMode {
+                    Text(viewModel.config.labelText).frame(alignment: .leading)
+                        .foregroundColor(cellState.theme.labelTextColor)
+                        .padding(EdgeInsets(top: viewModel.config.labelText.count > 0 ? vPadding/2:0 , leading: hPadding, bottom: viewModel.config.labelText.count > 0 ? vPadding/2:0, trailing: hPadding))
+                
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(cellState.theme.backgoundColor)
+            
+            .cornerRadius(4)
+            .overlay( /// apply a rounded border
+                RoundedRectangle(cornerRadius: 4)
+                    .stroke(cellState.theme.borderColor, lineWidth: 2)
+            ).padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+            
+        }
+        
+        .onChange(of: cellState, perform: {newValue in
+            isFocused = newValue == .selected && viewModel.config.viewMode == .textMode
+        })
+    }
+}
+
+
+
+struct C1CustomTextFieldError<Model>: View where Model: C1TextErrorViewModelProvider {
+    @ObservedObject var viewModel: Model
+    @Binding var cellState: CellState
+    @FocusState private var isFocused: Bool
+    let callback: (Model)->()?
+    
+    let hPadding = 16.0
+    let vPadding = 16.0
+    
+    var body: some View {
+        
+        HStack{
+            VStack(alignment: .leading, spacing: 0) {
+                Text(viewModel.config.labelText)
+                    .frame(alignment: .leading)
+                    .foregroundColor(cellState.theme.labelTextColor)
+                    .padding(EdgeInsets(top: viewModel.config.labelText.count > 0 ? vPadding/2:0 , leading: hPadding, bottom: viewModel.config.labelText.count > 0 ? vPadding/2:0, trailing: hPadding))
+                
                     TextField(viewModel.config.inputHolderText, text: $viewModel.config.inputText)
-                                            .onSubmit({
-                                            print("user clicked on return")
-                                            self.callback(viewModel)
-                                        })
+                        .onSubmit({
+                            print("user clicked on return")
+                            self.callback(viewModel)
+                        })
                         .focused($isFocused)
                         .keyboardType(viewModel.config.inputKeyBoardType)
                         .frame(height: 50, alignment: .leading)
@@ -67,18 +111,13 @@ struct C1CustomTextError<Model>: View where Model: C1TextErrorViewModelProvider 
                                 .foregroundColor(cellState.theme.labelTextColor)
                                 .padding((EdgeInsets(top: 0 , leading: 10, bottom: vPadding , trailing: 0)))
                         }.padding(EdgeInsets(top: 0, leading: hPadding, bottom: 0, trailing: hPadding))
-                        
-                    }
-
-                } else {
-                    Text(viewModel.config.labelText).frame(alignment: .leading)
-                        .foregroundColor(cellState.theme.labelTextColor)
-                        .padding(EdgeInsets(top: viewModel.config.labelText.count > 0 ? vPadding/2:0 , leading: hPadding, bottom: viewModel.config.labelText.count > 0 ? vPadding/2:0, trailing: hPadding))
+                                        
                 }
             }
+            
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(cellState.theme.backgoundColor)
-
+            
             .cornerRadius(4)
             .overlay( /// apply a rounded border
                 RoundedRectangle(cornerRadius: 4)
@@ -87,7 +126,7 @@ struct C1CustomTextError<Model>: View where Model: C1TextErrorViewModelProvider 
             
             
         }
-
+        
         .onChange(of: cellState, perform: {newValue in
             isFocused = newValue == .selected && viewModel.config.viewMode == .textMode
         })
@@ -97,7 +136,10 @@ struct C1CustomTextError<Model>: View where Model: C1TextErrorViewModelProvider 
 struct C1CustomTextErrorPreviews: PreviewProvider {
     
     static var previews: some View {
-        let model =  C1TextErrorViewModel()
+        let model =  C1TextErrorViewModel(isValid: { str  in
+            
+            return true
+        })
         model.config.inputText = ""
         model.config.labelText = "sd"
         model.config.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
@@ -107,7 +149,7 @@ struct C1CustomTextErrorPreviews: PreviewProvider {
         let c = FocusState()
         c.wrappedValue = true
         
-        return  C1CustomTextError(viewModel: model, cellState: .constant(CellState.selected), callback: { id in
+        return  C1CustomText(viewModel: model, cellState: .constant(CellState.selected), callback: { id in
             
         })
         
@@ -115,13 +157,11 @@ struct C1CustomTextErrorPreviews: PreviewProvider {
 }
 
 class C1TextErrorViewModel: ObservableObject, C1TextErrorViewModelProvider {
-    @Published var config: CustomTextErrorConfig = CustomTextErrorConfig(id: "")
+    @Published var config: CustomTextErrorConfig
+    init(isValid: @escaping (String) -> Bool) {
+        config = CustomTextErrorConfig(id: "", isValid: isValid)
+    }
 }
-
-protocol C1TextErrorViewModelProvider: ObservableObject {
-    var config: CustomTextErrorConfig {get set}
-}
-
 
 struct CustomTextErrorConfig {
     enum ViewMode {
@@ -141,7 +181,6 @@ struct CustomTextErrorConfig {
     
     var inputTextColor: Color = .black
     var inputTextBorderColor: Color = .black
-    var inputTextBgColor: Color = .white
     var labelTextColor: Color = .black
     var backgoundColor: Color = .green
     var borderColor: Color = .black
@@ -151,8 +190,11 @@ struct CustomTextErrorConfig {
     
     var borderWidth: Float = 1
     
-    init(id: String) {
+    var isValid: (String)-> Bool
+    
+    init(id: String, isValid: @escaping (String)-> Bool) {
         self.id = id
+        self.isValid = isValid
     }
     
 }
@@ -163,6 +205,7 @@ protocol Theme {
     var borderColor: Color {get set}
     var labelTextColor: Color {get set}
     var backgoundColor: Color {get set}
+    
 }
 
 struct selectedTheme: Theme {
@@ -191,7 +234,7 @@ struct unselectedTheme: Theme {
 
 struct errorTheme: Theme {
     var inputTextColor: Color = .black
-
+    
     var inputTextBorderColor: Color = .red
     
     var borderColor: Color = .red
@@ -200,4 +243,9 @@ struct errorTheme: Theme {
     
     var backgoundColor: Color = .red.opacity(0.3)
     
+}
+extension View {
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
 }
