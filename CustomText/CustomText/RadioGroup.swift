@@ -14,28 +14,19 @@ struct RadioGroup<Model>: View where Model: C1TextErrorViewModelProvider  {
                 RadioButton(callback: radioGroupCallback,
                             model: model)
             }
-        }
-//        .toolbar(content: {
-//            ToolbarItem(placement: .keyboard, content: {
-//            Text("Title")
-//         })})
-    }
-    
-    private func getCellState(model: Model) -> Binding<CellState> {
-        var state: CellState = .unselected
-        let binding = Binding(
-            get: { state },
-            set: { state = $0 }
-        )
-        if !(model.isValid?(model.inputText) ??  true) {
-            state = .error
-            model.cellState = state
-            
-            return binding
-        }
-        state = selectedModel?.id == model.id ? .selected : .unselected
-        model.cellState = state
-        return binding
+        }.toolbar(content:  {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                
+                Button("Done") {
+                    print("Pressed")
+                    guard let model = selectedModel else {
+                        return
+                    }
+                    callback(model)
+                }
+            }
+        })
     }
     
     func radioGroupCallback(id: Model) {
@@ -44,14 +35,11 @@ struct RadioGroup<Model>: View where Model: C1TextErrorViewModelProvider  {
         }
         for item in models {
             if (item.id == id.id ) {
-                
                 if !(id.isValid?(id.inputText) ??  true) {
                     item.cellState = .error
-
                 } else {
                     item.cellState = .selected
                 }
-                
             }
             else {
                 item.cellState = .unselected

@@ -10,25 +10,28 @@ import SwiftUI
 
 
 struct ContentView: View {
+    var one:  CustomTextErrorConfig
+    var two:  CustomTextErrorConfig
+    var three:  CustomTextErrorConfig
     
     init() {
         one = CustomTextErrorConfig(id: "one")
         two = CustomTextErrorConfig(id: "two")
         three = CustomTextErrorConfig(id: "three")
-                
+          
+        one.viewMode = .labelMode
         one.inputText = ""
-        one.labelText = "one"
-        one.errorText = "There is an erro in text please check and try again"
-        one.inputHolderText = "Enter your name"
-        one.errorImage = "globe"
-        one.isValid = validdateText
-        
+        one.labelText = "first"
+        one.bottonLabelText = "second"
+
+        two.viewMode = .textMode
         two.inputText = ""
         two.labelText = "two"
         two.errorText = "There is an erro in text please check and try again"
         two.inputHolderText = "Enter your name"
         two.errorImage = "globe"
         two.isValid = validdateText
+        two.inputKeyBoardType = .decimalPad
 
         
         three.inputText = ""
@@ -41,17 +44,15 @@ struct ContentView: View {
         
     }
 
-    var one:  CustomTextErrorConfig
-    var two:  CustomTextErrorConfig
-    var three:  CustomTextErrorConfig
+
     
     func validdateText(str: String ) -> Bool {
         if str == "aaa" {
-            one.errorText = "first error"
+            two.errorText = "first error"
             return false
         }
         if str == "bbb" {
-            one.errorText = "sec error"
+            two.errorText = "sec error"
             return false
         }
         return true

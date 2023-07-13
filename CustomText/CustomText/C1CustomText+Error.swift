@@ -129,30 +129,6 @@ struct C1CustomTextFieldError<Model>: View where Model: C1TextErrorViewModelProv
     }
 }
 
-//struct C1CustomTextErrorPreviews: PreviewProvider {
-//    
-//    static var previews: some View {
-//        let model =  C1TextErrorViewModel(isValid: { str  in
-//            
-//            return true
-//        })
-//        model.inputText = ""
-//        model.labelText = "sd"
-//        model.errorText = "sd slkdf ;sdlfk ;lskdf ;s;;lkdf;lk;lk;;k;kdsf ;ldsf k;ldsf wef s;lf ;;lsdk f;lks f;dlks;dfl k"
-//        model.inputHolderText = "Enter your name"
-//        
-//        model.errorImage = "globe"
-//        let c = FocusState()
-//        c.wrappedValue = true
-//        
-//        return  C1CustomText(viewModel: model, cellState: .constant(CellState.selected), callback: { id in
-//            
-//        })
-//        
-//    }
-//}
-
-//jj
 enum ViewMode {
     case labelMode
     case textMode
@@ -165,31 +141,20 @@ protocol C1TextErrorViewModelProvider: ObservableObject {
     var inputText: String {get set}
     var errorText: String {get set}
     var inputHolderText: String {get set}
-    
     var inputKeyBoardType: UIKeyboardType {get set}
     var errorImage: String {get set}
-    
-
     
     var selected: Theme? {get set}
     var unselected: Theme? {get set}
     var error: Theme? {get set}
     
-    
     var cellState: CellState {get set}
-
-    var errorTextColor: Color {get set}
-    
     var viewMode: ViewMode {get set}
-    
-    var borderWidth: Float {get set}
-    
     var isValid: ((String)-> Bool)? {get set}
     
 }
 class CustomTextErrorConfig: ObservableObject, C1TextErrorViewModelProvider {
  
-    
     var id: String
     @Published var labelText: String = ""
     @Published var bottonLabelText: String = ""
@@ -212,12 +177,7 @@ class CustomTextErrorConfig: ObservableObject, C1TextErrorViewModelProvider {
     @Published var cellState: CellState = .unselected
 
     
-    
-    var errorTextColor: Color = .red
-    
     var viewMode: ViewMode = .textMode
-    
-    var borderWidth: Float = 1
     
     var isValid: ((String)-> Bool)?
     
